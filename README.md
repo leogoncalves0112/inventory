@@ -8,7 +8,7 @@ Sistema criado com SpringBoot e banco H2.
 
 ### Configurações
 
-Para configuração do envio do email, deve-se configurar no arquivo application.properties nas seguintes chaves
+Para configuração do envio do email, deve-se configurar no arquivo application.properties nas seguintes chaves:
 
 ```
 spring.mail.host=smtp.gmail.com
@@ -20,6 +20,12 @@ spring.mail.properties.mail.smtp.starttls.enable: true
 spring.mail.properties.mail.smtp.starttls.required: true
 spring.mail.properties.mail.smtp.ssl.enable: true
 inventory.mail.to=yyy@gmail.com
+```
+
+Para configurar o cálculo de depreciação deve-se informar o valor no arquivo application.properties na seguinte chave:
+
+```
+inventory.equipment.depreciation=10
 ```
 
 ### Instalando

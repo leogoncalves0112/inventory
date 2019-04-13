@@ -12,6 +12,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -29,6 +30,9 @@ public class EquipmentServiceImpl implements EquipmentService {
 
 	@Autowired
 	public JavaMailSender emailSender;
+	
+	@Value("${inventory.mail.to}")
+	private String mailTo;
 
 	@Override
 	public List<Equipment> findAll() {
@@ -79,12 +83,12 @@ public class EquipmentServiceImpl implements EquipmentService {
 	}
 
 	@Override
-	public void sendMessageWithQrcode(String to, byte[] qrCode) throws MessagingException {
+	public void sendMessageWithQrcode(byte[] qrCode) throws MessagingException {
 		MimeMessage message = emailSender.createMimeMessage();
 
 		MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-		helper.setTo(to);
+		helper.setTo(mailTo);
 		helper.setSubject("Equipamento Cadastrado");
 		helper.setText("Segue o QR-Code");
 

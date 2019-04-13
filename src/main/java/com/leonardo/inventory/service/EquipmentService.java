@@ -64,10 +64,9 @@ public interface EquipmentService {
 	/**
 	 * Envia um email com o qrcode
 	 * 
-	 * @param to     Destinatário
 	 * @param qrCode byte[] do qrcode
 	 * @throws MessagingException
 	 */
-	public void sendMessageWithQrcode(String to, byte[] qrCode) throws MessagingException;
+	public void sendMessageWithQrcode(byte[] qrCode) throws MessagingException;
 
 }

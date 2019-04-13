@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.leonardo.inventory.model.Equipment;
@@ -35,13 +36,15 @@ public class EquipmentController {
 
 	@Autowired
 	private ObjectMapper mapper;
-	
-	@Value("${inventory.mail.to}")
-	private String mailTo;
+
+	@Value("${inventory.equipment.depreciation}")
+	@JsonIgnore
+	private Double depreciation;
 
 	@GetMapping
 	public List<EquipmentResource> list() {
-		return this.service.findAll().stream().map(EquipmentResource::fromEntity).collect(Collectors.toList());
+		return this.service.findAll().stream().map(entity -> EquipmentResource.fromEntity(entity, depreciation))
+				.collect(Collectors.toList());
 	}
 
 	@GetMapping("/{id}")
@@ -49,7 +52,7 @@ public class EquipmentController {
 		Equipment equipment = this.service.findById(id);
 
 		if (equipment != null) {
-			return new ResponseEntity<>(EquipmentResource.fromEntity(equipment), HttpStatus.OK);
+			return new ResponseEntity<>(EquipmentResource.fromEntity(equipment, depreciation), HttpStatus.OK);
 		}
 
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -58,15 +61,14 @@ public class EquipmentController {
 	@PostMapping
 	public EquipmentResource save(@RequestBody EquipmentResource equipment) {
 		Equipment entity = this.service.save(equipment.toEntity());
-		EquipmentResource resource = EquipmentResource.fromEntity(entity);
+		EquipmentResource resource = EquipmentResource.fromEntity(entity, depreciation);
 
 		try {
 			// Send email
-			this.service.sendMessageWithQrcode(mailTo, this.getQRCode(resource));
+			this.service.sendMessageWithQrcode(this.getQRCode(resource));
 		} catch (Exception e) {
 			// Se falhou não envia o email mas salva o equipamento
 		}
-		
 
 		return resource;
 	}
@@ -77,7 +79,8 @@ public class EquipmentController {
 		Equipment equipment = this.service.findById(id);
 
 		if (equipment != null) {
-			return new ResponseEntity<>(EquipmentResource.fromEntity(this.service.uploadImage(equipment, file)),
+			return new ResponseEntity<>(
+					EquipmentResource.fromEntity(this.service.uploadImage(equipment, file), depreciation),
 					HttpStatus.OK);
 		}
 
@@ -105,7 +108,7 @@ public class EquipmentController {
 		Equipment equipment = this.service.findById(id);
 
 		if (equipment != null) {
-			EquipmentResource resource = EquipmentResource.fromEntity(equipment);
+			EquipmentResource resource = EquipmentResource.fromEntity(equipment, depreciation);
 
 			byte[] qrcode = this.getQRCode(resource);
 

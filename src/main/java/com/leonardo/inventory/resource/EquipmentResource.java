@@ -2,6 +2,7 @@ package com.leonardo.inventory.resource;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
@@ -28,9 +29,10 @@ public class EquipmentResource {
 	 */
 	private LocalDate acquired;
 	/**
-	 * Price
+	 * Valor
 	 */
 	private Double price;
+	private Double updatedPrice;
 	/**
 	 * Link for image
 	 */
@@ -80,6 +82,14 @@ public class EquipmentResource {
 		this.price = price;
 	}
 
+	public Double getUpdatedPrice() {
+		return this.updatedPrice;
+	}
+
+	public void setUpdatedPrice(Double updatedPrice) {
+		this.updatedPrice = updatedPrice;
+	}
+
 	public Link getImage() {
 		return image;
 	}
@@ -96,14 +106,15 @@ public class EquipmentResource {
 		this.qrCode = qrCode;
 	}
 
-	public static EquipmentResource fromEntity(Equipment entity) {
+	public static EquipmentResource fromEntity(Equipment entity, Double depreciation) {
 		EquipmentResource resource = new EquipmentResource();
 		resource.setId(entity.getId());
 		resource.setType(entity.getType());
 		resource.setModel(entity.getModel());
 		resource.setAcquired(entity.getAcquired());
 		resource.setPrice(entity.getPrice());
-		
+		resource.setUpdatedPrice(resource.getUpdatedDepreciation(depreciation));
+
 		// Link to QR-Code
 		try {
 			resource.setQrCode(ControllerLinkBuilder
@@ -112,7 +123,7 @@ public class EquipmentResource {
 		} catch (IOException e) {
 			// Do nothing
 		}
-		
+
 		// Link to Image
 		if (entity.getImage() != null) {
 			try {
@@ -136,6 +147,17 @@ public class EquipmentResource {
 		entity.setPrice(this.getPrice());
 
 		return entity;
+	}
+
+	private double getUpdatedDepreciation(Double depreciation) {
+		long months = ChronoUnit.MONTHS.between(this.getAcquired(), LocalDate.now());
+
+		double dep = months * depreciation;
+		if (dep >= 100D) {
+			return 0D;
+		}
+
+		return price - (price * dep / 100);
 	}
 
 }
