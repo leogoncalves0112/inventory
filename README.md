@@ -28,6 +28,12 @@ Para configurar o cálculo de depreciação deve-se informar o valor no arquivo 
 inventory.equipment.depreciation=10
 ```
 
+Para utilizar o swagger-ui e ver a API só acessar o seguinte endereço:
+
+```
+http://localhost:8080/swagger-ui.html
+```
+
 ### Instalando
 
 A step by step series of examples that tell you how to get a development env running

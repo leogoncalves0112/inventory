@@ -28,7 +28,7 @@ import com.leonardo.inventory.service.EquipmentService;
 import com.leonardo.inventory.utilities.Utilities;
 
 @RestController
-@RequestMapping("/equipments")
+@RequestMapping("/api/equipments")
 public class EquipmentController {
 
 	@Autowired

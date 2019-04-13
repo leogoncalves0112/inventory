@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -42,6 +43,9 @@ public class InventoryApplicationTests {
 
 	@Autowired
 	private MockMvc mockMvc;
+	
+	@MockBean
+    private JavaMailSender mailSender;
 
 	@Autowired
 	@MockBean
@@ -55,7 +59,7 @@ public class InventoryApplicationTests {
 		Equipment mock = this.createMockEquipment();
 		given(repository.findAll()).willReturn(Arrays.asList(mock));
 
-		this.mockMvc.perform(get("/equipments"))
+		this.mockMvc.perform(get("/api/equipments"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$", hasSize(1)))
 			.andExpect(jsonPath("$[0].id", is(mock.getId().intValue())));
@@ -66,7 +70,7 @@ public class InventoryApplicationTests {
 		Equipment mock = this.createMockEquipment();
 		given(repository.findById(mock.getId())).willReturn(Optional.of(mock));
 
-		this.mockMvc.perform(get("/equipments/{id}", 1L))
+		this.mockMvc.perform(get("/api/equipments/{id}", 1L))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.model", is(mock.getModel())));
 	}
@@ -80,7 +84,7 @@ public class InventoryApplicationTests {
 		// Create a temporary file.
 		tempFolder.newFile("1.jpeg");
 
-		this.mockMvc.perform(get("/equipments/{id}", 1L).contentType(MediaType.IMAGE_JPEG_VALUE))
+		this.mockMvc.perform(get("/api/equipments/{id}", 1L).contentType(MediaType.IMAGE_JPEG_VALUE))
 			.andExpect(status().isOk());
 	}
 	
@@ -90,7 +94,7 @@ public class InventoryApplicationTests {
 		mock.setImage(null);
 		given(repository.findById(mock.getId())).willReturn(Optional.of(mock));
 
-		this.mockMvc.perform(get("/equipments/{id}", 1L).contentType(MediaType.IMAGE_JPEG_VALUE))
+		this.mockMvc.perform(get("/api/equipments/{id}", 1L).contentType(MediaType.IMAGE_JPEG_VALUE))
 			.andExpect(status().isNotFound());
 	}
 	
@@ -99,7 +103,7 @@ public class InventoryApplicationTests {
 		Equipment mock = this.createMockEquipment();
 		given(repository.save(Mockito.any())).willReturn(mock);
 		
-		this.mockMvc.perform(post("/equipments")
+		this.mockMvc.perform(post("/api/equipments")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(this.createMockEquipmentJSON()))
 			.andExpect(status().isOk())
@@ -112,13 +116,13 @@ public class InventoryApplicationTests {
 		Equipment mock = this.createMockEquipment();
 		given(repository.findById(mock.getId())).willReturn(Optional.of(mock));
 		
-		this.mockMvc.perform(MockMvcRequestBuilders.delete("/equipments/{id}", mock.getId()))
+		this.mockMvc.perform(MockMvcRequestBuilders.delete("/api/equipments/{id}", mock.getId()))
 			.andExpect(status().isOk());
 	}
 	
 	@Test
 	public void deleteNonExistentEquipment() throws Exception {		
-		this.mockMvc.perform(MockMvcRequestBuilders.delete("/equipments/{id}", 0L))
+		this.mockMvc.perform(MockMvcRequestBuilders.delete("/api/equipments/{id}", 0L))
 			.andExpect(status().isNotFound());
 	}
 	
@@ -131,7 +135,7 @@ public class InventoryApplicationTests {
 		MockMultipartFile file = new MockMultipartFile("file", "1.jpeg", MediaType.IMAGE_JPEG_VALUE,
 				"some image".getBytes());
 
-		this.mockMvc.perform(multipart("/equipments/{id}/upload", 1L).file(file))
+		this.mockMvc.perform(multipart("/api/equipments/{id}/upload", 1L).file(file))
 			.andExpect(status().isOk());
 	}
 
