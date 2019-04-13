@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 
-import com.leonardo.inventory.controller.EquipmentRestController;
+import com.leonardo.inventory.controller.EquipmentController;
 import com.leonardo.inventory.model.Equipment;
 
 public class EquipmentResource {
@@ -35,6 +35,10 @@ public class EquipmentResource {
 	 * Link for image
 	 */
 	private Link image;
+	/**
+	 * Link for qrcode
+	 */
+	private Link qrCode;
 
 	public Long getId() {
 		return id;
@@ -84,6 +88,14 @@ public class EquipmentResource {
 		this.image = image;
 	}
 
+	public Link getQrCode() {
+		return qrCode;
+	}
+
+	public void setQrCode(Link qrCode) {
+		this.qrCode = qrCode;
+	}
+
 	public static EquipmentResource fromEntity(Equipment entity) {
 		EquipmentResource resource = new EquipmentResource();
 		resource.setId(entity.getId());
@@ -91,10 +103,21 @@ public class EquipmentResource {
 		resource.setModel(entity.getModel());
 		resource.setAcquired(entity.getAcquired());
 		resource.setPrice(entity.getPrice());
+		
+		// Link to QR-Code
+		try {
+			resource.setQrCode(ControllerLinkBuilder
+					.linkTo(ControllerLinkBuilder.methodOn(EquipmentController.class).getQRCode(entity.getId()))
+					.withSelfRel());
+		} catch (IOException e) {
+			// Do nothing
+		}
+		
+		// Link to Image
 		if (entity.getImage() != null) {
 			try {
 				resource.setImage(ControllerLinkBuilder
-						.linkTo(ControllerLinkBuilder.methodOn(EquipmentRestController.class).getImage(entity.getId()))
+						.linkTo(ControllerLinkBuilder.methodOn(EquipmentController.class).getImage(entity.getId()))
 						.withSelfRel());
 			} catch (IOException e) {
 				// Do nothing
