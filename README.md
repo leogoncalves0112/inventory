@@ -8,6 +8,14 @@ Sistema criado com SpringBoot e banco H2.
 
 ### Configurações
 
+A imagem do equipamento está sendo salvo no S3 da Amazon, para configurar os dados do S3 deverá configurar no arquivo application.properties nas seguintes chaves:
+
+```
+aws.s3.accessKey=accessKey
+aws.s3.secretKey=secretKey
+aws.s3.bucketName=bucketName
+```
+
 Para configuração do envio do email, deve-se configurar no arquivo application.properties nas seguintes chaves:
 
 ```

@@ -1,10 +1,6 @@
 package com.leonardo.inventory.service;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,8 +25,11 @@ public class EquipmentServiceImpl implements EquipmentService {
 	private EquipmentRepository repository;
 
 	@Autowired
+	private StorageService storageService;
+
+	@Autowired
 	public JavaMailSender emailSender;
-	
+
 	@Value("${inventory.mail.to}")
 	private String mailTo;
 
@@ -61,23 +60,19 @@ public class EquipmentServiceImpl implements EquipmentService {
 	@Override
 	public Equipment uploadImage(Equipment equipment, MultipartFile file) throws IOException {
 		// Save image in storage
-		String imageName = equipment.getId() + "_" + new Date().getTime();
-		String imagePath = "/home/leonardo/" + imageName + ".jpeg";
+		String filename = equipment.getId() + ".jpeg";
 
-		// TODO Change to S3
-		File newfile = new File(imagePath);
-		file.transferTo(newfile);
+		this.storageService.putFile(file, filename);
 
 		// Save path in database
-		equipment.setImage(imagePath);
+		equipment.setImage(filename);
 		return this.save(equipment);
 	}
 
 	@Override
 	public byte[] downloadImage(Equipment equipment) throws IOException {
 		if (equipment.getImage() != null) {
-			// TODO change to S3
-			return Files.readAllBytes(Paths.get(equipment.getImage()));
+			return this.storageService.getFile(equipment.getImage());
 		}
 		return new byte[0];
 	}
