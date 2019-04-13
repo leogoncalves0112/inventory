@@ -4,7 +4,7 @@ Projeto de cadastro de recursos
 
 ## Sobre
 
-Sistema criado com SpringBoot e banco H2.
+Api criada com SpringBoot e banco H2.
 
 ### Configurações
 
@@ -59,3 +59,5 @@ docker push leogoncalves0112/ubuntu-java-inventory:latest
 ```
 
 Dentro do docker tem a pasta /cin, que dentro contém o jar da aplicação e um script (startup.sh) para levantar o jar com o tomcat embarcado.  
+
+A porta que a aplicação levanta dentro do docker é a 8080, para ser configurado quando rodar o container.
