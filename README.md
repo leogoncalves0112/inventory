@@ -44,18 +44,18 @@ http://localhost:8080/swagger-ui.html
 
 ### Instalando
 
-A step by step series of examples that tell you how to get a development env running
+Foi criado um docker com o ubuntu + java e a aplicação dentro.
 
-Say what the step will be
-
-```
-Give the example
-```
-
-And repeat
+O repositório é o seguinte:
 
 ```
-until finished
+https://cloud.docker.com/repository/docker/leogoncalves0112/ubuntu-java-inventory
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
+Para realizar o push só rodar:
+
+```
+docker push leogoncalves0112/ubuntu-java-inventory:latest
+```
+
+Dentro do docker tem a pasta /cin, que dentro contém o jar da aplicação e um script (startup.sh) para levantar o jar com o tomcat embarcado.  
