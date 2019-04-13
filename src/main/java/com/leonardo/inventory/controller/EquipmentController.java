@@ -134,10 +134,15 @@ public class EquipmentController {
 	}
 
 	private byte[] getQRCode(EquipmentResource resource) throws JsonProcessingException {
-		resource.setImage(null);
-		resource.setQrCode(null);
+		EquipmentResource equipment = new EquipmentResource();
+		equipment.setId(resource.getId());
+		equipment.setType(resource.getType());
+		equipment.setModel(resource.getModel());
+		equipment.setAcquired(resource.getAcquired());
+		equipment.setPrice(resource.getPrice());
+		equipment.setUpdatedPrice(resource.getUpdatedPrice());
 
-		String json = mapper.writeValueAsString(resource);
+		String json = mapper.writeValueAsString(equipment);
 		return Utilities.getQRCodeImage(json, 200, 200);
 	}
 
