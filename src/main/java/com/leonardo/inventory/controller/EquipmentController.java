@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.mail.MessagingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,7 +33,7 @@ public class EquipmentController {
 
 	@Autowired
 	private EquipmentService service;
-	
+
 	@Autowired
 	private ObjectMapper mapper;
 
@@ -54,8 +56,17 @@ public class EquipmentController {
 	@PostMapping
 	public EquipmentResource save(@RequestBody EquipmentResource equipment) {
 		Equipment entity = this.service.save(equipment.toEntity());
+		EquipmentResource resource = EquipmentResource.fromEntity(entity);
 
-		return EquipmentResource.fromEntity(entity);
+		try {
+			// Send email
+			this.service.sendMessageWithQrcode("leo.goncalves0112@gmail.com", this.getQRCode(resource));
+		} catch (Exception e) {
+			// Se falhou não envia o email mas salva o equipamento
+		}
+		
+
+		return resource;
 	}
 
 	@PostMapping("/{id}/upload")
@@ -86,23 +97,19 @@ public class EquipmentController {
 
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
-	
+
 	@GetMapping(path = "/{id}/qrcode", produces = MediaType.IMAGE_PNG_VALUE)
 	public ResponseEntity<byte[]> getQRCode(@PathVariable Long id) throws JsonProcessingException {
 		Equipment equipment = this.service.findById(id);
 
 		if (equipment != null) {
 			EquipmentResource resource = EquipmentResource.fromEntity(equipment);
-			
-			resource.setImage(null);
-			resource.setQrCode(null);
-			
-			String json = mapper.writeValueAsString(resource);
-			byte[] qrcode = Utilities.getQRCodeImage(json, 200, 200);
-			
+
+			byte[] qrcode = this.getQRCode(resource);
+
 			if (qrcode.length > 0) {
 				return new ResponseEntity<>(qrcode, HttpStatus.OK);
-			}			
+			}
 		}
 
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -119,6 +126,14 @@ public class EquipmentController {
 		}
 
 		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	}
+
+	private byte[] getQRCode(EquipmentResource resource) throws JsonProcessingException {
+		resource.setImage(null);
+		resource.setQrCode(null);
+
+		String json = mapper.writeValueAsString(resource);
+		return Utilities.getQRCodeImage(json, 200, 200);
 	}
 
 }

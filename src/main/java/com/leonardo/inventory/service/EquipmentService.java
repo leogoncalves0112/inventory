@@ -3,6 +3,8 @@ package com.leonardo.inventory.service;
 import java.io.IOException;
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.leonardo.inventory.model.Equipment;
@@ -58,5 +60,14 @@ public interface EquipmentService {
 	 * @throws IOException
 	 */
 	public byte[] downloadImage(Equipment equipment) throws IOException;
+
+	/**
+	 * Envia um email com o qrcode
+	 * 
+	 * @param to     Destinatário
+	 * @param qrCode byte[] do qrcode
+	 * @throws MessagingException
+	 */
+	public void sendMessageWithQrcode(String to, byte[] qrCode) throws MessagingException;
 
 }

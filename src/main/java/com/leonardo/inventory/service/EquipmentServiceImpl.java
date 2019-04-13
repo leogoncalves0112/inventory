@@ -8,7 +8,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,6 +26,9 @@ public class EquipmentServiceImpl implements EquipmentService {
 
 	@Autowired
 	private EquipmentRepository repository;
+
+	@Autowired
+	public JavaMailSender emailSender;
 
 	@Override
 	public List<Equipment> findAll() {
@@ -46,7 +55,7 @@ public class EquipmentServiceImpl implements EquipmentService {
 	}
 
 	@Override
-	public Equipment uploadImage(Equipment equipment, MultipartFile file) throws IllegalStateException, IOException {
+	public Equipment uploadImage(Equipment equipment, MultipartFile file) throws IOException {
 		// Save image in storage
 		String imageName = equipment.getId() + "_" + new Date().getTime();
 		String imagePath = "/home/leonardo/" + imageName + ".jpeg";
@@ -67,6 +76,21 @@ public class EquipmentServiceImpl implements EquipmentService {
 			return Files.readAllBytes(Paths.get(equipment.getImage()));
 		}
 		return new byte[0];
+	}
+
+	@Override
+	public void sendMessageWithQrcode(String to, byte[] qrCode) throws MessagingException {
+		MimeMessage message = emailSender.createMimeMessage();
+
+		MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+		helper.setTo(to);
+		helper.setSubject("Equipamento Cadastrado");
+		helper.setText("Segue o QR-Code");
+
+		helper.addAttachment("Invoice", new ByteArrayResource(qrCode));
+
+		emailSender.send(message);
 	}
 
 }
