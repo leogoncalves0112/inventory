@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.mail.MessagingException;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +35,9 @@ public class EquipmentController {
 
 	@Autowired
 	private ObjectMapper mapper;
+	
+	@Value("${inventory.mail.to}")
+	private String mailTo;
 
 	@GetMapping
 	public List<EquipmentResource> list() {
@@ -60,7 +62,7 @@ public class EquipmentController {
 
 		try {
 			// Send email
-			this.service.sendMessageWithQrcode("leo.goncalves0112@gmail.com", this.getQRCode(resource));
+			this.service.sendMessageWithQrcode(mailTo, this.getQRCode(resource));
 		} catch (Exception e) {
 			// Se falhou não envia o email mas salva o equipamento
 		}
