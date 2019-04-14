@@ -49,15 +49,20 @@ Foi criado um docker com o ubuntu + java e a aplicação dentro.
 O repositório é o seguinte:
 
 ```
-https://cloud.docker.com/repository/docker/leogoncalves0112/ubuntu-java-inventory
+https://cloud.docker.com/repository/docker/leogoncalves0112/alpine-java8-inventory
 ```
 
-Para realizar o push só rodar:
+Para rodar pode executar o seguinte:
 
 ```
-docker push leogoncalves0112/ubuntu-java-inventory:latest
+# docker volume create --name=alpine-java8-inventory
+# docker run --name=alpine-java8-inventory --publish=8080:8080 --volume=alpine-java8-inventory:/var/lib/cin/alpine-java8-inventory leogoncalves0112/alpine-java8-inventory
 ```
 
-Dentro do docker tem a pasta /cin, que dentro contém o jar da aplicação e um script (startup.sh) para levantar o jar com o tomcat embarcado.  
+Dentro do docker tem a pasta /opt/cin, que dentro contém o jar da aplicação com o embedded tomcat.  
 
 A porta que a aplicação levanta dentro do docker é a 8080, para ser configurado quando rodar o container.
+
+Existe o arquivo Dockerfile com a montagem da imagem comitada neste projeto.
+
+Obs.: Lembrando que as configurações do app estão iguais as que estão comitadas no repositório, logo para testar alguma integração deverá configurar o application.properties dentro do jar. 
