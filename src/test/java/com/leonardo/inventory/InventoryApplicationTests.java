@@ -13,9 +13,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Optional;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +32,7 @@ import com.leonardo.inventory.model.Equipment;
 import com.leonardo.inventory.repository.EquipmentRepository;
 import com.leonardo.inventory.service.EquipmentService;
 import com.leonardo.inventory.service.EquipmentServiceImpl;
+import com.leonardo.inventory.service.StorageService;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest
@@ -51,8 +50,8 @@ public class InventoryApplicationTests {
 	@MockBean
 	private EquipmentRepository repository;
 
-	@Rule
-	public TemporaryFolder tempFolder = new TemporaryFolder();
+	@MockBean
+	private StorageService storageService;
 
 	@Test
 	public void listEquipments() throws Exception {
@@ -75,14 +74,11 @@ public class InventoryApplicationTests {
 			.andExpect(jsonPath("$.model", is(mock.getModel())));
 	}
 
-	// TODO
 	@Test
 	public void getImage() throws Exception {
 		Equipment mock = this.createMockEquipment();
 		given(repository.findById(mock.getId())).willReturn(Optional.of(mock));
-
-		// Create a temporary file.
-		tempFolder.newFile("1.jpeg");
+		given(storageService.getFile(mock.getImage())).willReturn("teste de bytes da imagem".getBytes());
 
 		this.mockMvc.perform(get("/api/equipments/{id}", 1L).contentType(MediaType.IMAGE_JPEG_VALUE))
 			.andExpect(status().isOk());

@@ -27,6 +27,8 @@ import com.leonardo.inventory.resource.EquipmentResource;
 import com.leonardo.inventory.service.EquipmentService;
 import com.leonardo.inventory.utilities.Utilities;
 
+import io.swagger.annotations.ApiOperation;
+
 @RestController
 @RequestMapping("/api/equipments")
 public class EquipmentController {
@@ -42,12 +44,14 @@ public class EquipmentController {
 	private Double depreciation;
 
 	@GetMapping
+	@ApiOperation(value = "Lista todos os equipamentos")
 	public List<EquipmentResource> list() {
 		return this.service.findAll().stream().map(entity -> EquipmentResource.fromEntity(entity, depreciation))
 				.collect(Collectors.toList());
 	}
 
 	@GetMapping("/{id}")
+	@ApiOperation(value = "Consulta um equipamento pelo id")
 	public ResponseEntity<EquipmentResource> get(@PathVariable Long id) {
 		Equipment equipment = this.service.findById(id);
 
@@ -59,6 +63,7 @@ public class EquipmentController {
 	}
 
 	@PostMapping
+	@ApiOperation(value = "Salva um equipamento")
 	public EquipmentResource save(@RequestBody EquipmentResource equipment) {
 		Equipment entity = this.service.save(equipment.toEntity());
 		EquipmentResource resource = EquipmentResource.fromEntity(entity, depreciation);
@@ -74,6 +79,7 @@ public class EquipmentController {
 	}
 
 	@PostMapping("/{id}/upload")
+	@ApiOperation(value = "Realiza o upload da imagem do equipamento")
 	public ResponseEntity<EquipmentResource> upload(@PathVariable Long id, @RequestPart MultipartFile file)
 			throws IOException {
 		Equipment equipment = this.service.findById(id);
@@ -88,6 +94,7 @@ public class EquipmentController {
 	}
 
 	@GetMapping(path = "/{id}", consumes = MediaType.IMAGE_JPEG_VALUE, produces = MediaType.IMAGE_JPEG_VALUE)
+	@ApiOperation(value = "Obtém a imagem do equipamento")
 	public ResponseEntity<byte[]> getImage(@PathVariable Long id) throws IOException {
 		Equipment equipment = this.service.findById(id);
 
@@ -104,6 +111,7 @@ public class EquipmentController {
 	}
 
 	@GetMapping(path = "/{id}/qrcode", produces = MediaType.IMAGE_PNG_VALUE)
+	@ApiOperation(value = "Obtém o QR-Code do equipamento")
 	public ResponseEntity<byte[]> getQRCode(@PathVariable Long id) throws JsonProcessingException {
 		Equipment equipment = this.service.findById(id);
 
@@ -121,6 +129,7 @@ public class EquipmentController {
 	}
 
 	@DeleteMapping("/{id}")
+	@ApiOperation(value = "Remove um equipamento")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
 		Equipment equipment = this.service.findById(id);
 
