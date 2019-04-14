@@ -66,3 +66,5 @@ A porta que a aplicação levanta dentro do docker é a 8080, para ser configura
 Existe o arquivo Dockerfile com a montagem da imagem comitada neste projeto.
 
 Obs.: Lembrando que as configurações do app estão iguais as que estão comitadas no repositório, logo para testar alguma integração deverá configurar o application.properties dentro do jar. 
+
+Obs.: Ainda resta o front-end (desejavél), pois tive que trabalhar até tarde e no fim de semana. Se conseguir tempo no fim do domingo, tentarei concluir.
